@@ -1,0 +1,27 @@
+#!/bin/bash
+FONT="/Library/Fonts/Arial.ttf"
+FONT_SIZE="32"
+BACKGROUND_COLOR="black@0.7"
+
+BACKGROUND_HEIGHT=$((2*$FONT_SIZE))
+
+if [ $# -ne 3 ]; then
+	echo "Usage"
+	echo "$0 tsv invideo outvideo"
+	exit 1
+fi
+
+(ffmpeg 2>&1 | grep enable-libfreetype) || echo "Don't think you have libfreetype, probably won't work"
+
+filters=$(while IFS=$'\t' read start end text; do
+	 echo -n "drawbox=y=ih*0.75:color=$BACKGROUND_COLOR:width=iw:height=$BACKGROUND_HEIGHT:t=max:enable='between(t,$start,$end)',drawtext=enable='between(t,$start,$end)':fontfile=$FONT:text='$text':fontcolor=white:fontsize=$FONT_SIZE:x=(w-tw)/2:y=(h*0.75)+th,"
+ done < $1)
+
+echo $filters
+
+#ffmpeg -i $1 -vf \
+#	 "drawbox=y=ih*0.75:color=black@0.7:width=iw:height=64:t=max:enable='between(t,10,30)', \
+#	 drawtext=enable='between(t,10,30)':fontfile=$FONT:text='Title of this Video':fontcolor=white:fontsize=32:x=(w-tw)/2:y=(h*0.75)+th" \
+#	  -acodec copy vid.test.mp4
+
+ffmpeg -i $2 -vf "${filters%,}" -acodec copy $3
