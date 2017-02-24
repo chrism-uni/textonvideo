@@ -14,7 +14,7 @@ fi
 (ffmpeg 2>&1 | grep enable-libfreetype) || echo "Don't think you have libfreetype, probably won't work"
 
 filters=$(while IFS=$'\t' read start end text; do
-	 echo -n "drawbox=y=ih*0.75:color=$BACKGROUND_COLOR:width=iw:height=$BACKGROUND_HEIGHT:t=max:enable='between(t,$start,$end)',drawtext=enable='between(t,$start,$end)':fontfile=$FONT:text='$text':fontcolor=white:fontsize=$FONT_SIZE:x=(w-tw)/2:y=(h*0.75)+th,"
+	 echo -n "drawbox=y=ih*0.75:color='$BACKGROUND_COLOR':width=iw:height=$BACKGROUND_HEIGHT:t=max:enable='between(t,$start,$end)',drawtext=enable='between(t,$start,$end)':fontfile=$FONT:text='${text//\'/’}':fontcolor=white:fontsize=$FONT_SIZE:x=(w-tw)/2:y=(h*0.75)+th,"
  done < $1)
 
 echo $filters
